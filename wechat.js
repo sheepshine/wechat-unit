@@ -58,25 +58,28 @@ var $w={
 			$.ajax({
 				type: "GET",
 				url: payurl+"&random="+Math.random(),
-				data:{data},
+				data:data,
 				dataType: jsonTye,
 				success: function(response) {
-					wx.chooseWXPay({
-						timestamp: response.timeStamp,
-						nonceStr: response.nonceStr,
-						package: response.package,
-						signType: response.signType,
-						paySign: response.paySign,
-						success: function (res) {
-							scufn
-						},
-						cancel: function (res) {
-							canfn
-						},
-						fail: function (res) {
-							canfn
-						}
-					});
+					
+						wx.chooseWXPay({
+							timestamp: response.timeStamp,
+							nonceStr: response.nonceStr,
+							package: response.package,
+							signType: response.signType,
+							paySign: response.paySign,
+							success: function (res) {
+								scufn
+							},
+							cancel: function (res) {
+								canfn
+							},
+							fail: function (res) {
+								canfn
+							}
+						});
+					
+					
 				
 				}
 				
