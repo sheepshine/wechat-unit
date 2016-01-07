@@ -4,9 +4,9 @@ var $w={
 		var headtxt=document.getElementsByTagName("head")[0].innerHTML;
 		document.getElementsByTagName("head")[0].innerHTML=headtxt+wechatlink;
 	},
-	getSign:function(signurl,til,des,sharelink,imgurl,sucfn,jsontype){
+	getSign:function(signurl,til,des,sharelink,imgurl,sucfn,jsontype,fun){
 		$w.init();
-		//鉴权地址，分享标题，描述，分享链接，分享图片，分享成功函数，是否jsonp
+		//鉴权地址，分享标题，描述，分享链接，分享图片，分享成功函数，是否jsonp,回调函数
 		var url = window.location.href;
 		jsontype?jsonTye='json':jsonTye='jsonp'
 		  $.ajax({
@@ -17,13 +17,17 @@ var $w={
                 data: {signUrl: url},
                 success: function (data) {
                     wx.config({
-                        debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+                        debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
                         appId: data.appId, // 必填，公众号的唯一标识
                         timestamp: data.timestamp, // 必填，生成签名的时间戳
                         nonceStr: data.nonceStr, // 必填，生成签名的随机串
                         signature: data.signature,// 必填，签名，见附录1
                         jsApiList: data.jsApiList // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
                     });
+                    console.log(fun)
+                    if(fun){
+                    	fun();
+                    }
                 }
             });
             wx.ready(function () {
@@ -58,7 +62,7 @@ var $w={
 			$.ajax({
 				type: "GET",
 				url: payurl+"&random="+Math.random(),
-				data:{data},
+				data:data,
 				dataType: jsonTye,
 				success: function(response) {
 					if(response.errorCode){
@@ -71,13 +75,13 @@ var $w={
 							signType: response.signType,
 							paySign: response.paySign,
 							success: function (res) {
-								scufn
+								scufn()
 							},
 							cancel: function (res) {
-								canfn
+								canfn()
 							},
 							fail: function (res) {
-								canfn
+								canfn()
 							}
 						});
 					}
@@ -87,48 +91,38 @@ var $w={
 				
 			});
 	},
-	//倒计时
-	timecount:function(BEGIN_TIME,bgain,nobgain,target){
-		timer=setInterval(function(){
-		time_to()
-		},1000);
-		time_to();
-		function time_to(){
-			var timestamp = Date.parse(new Date())/1000;
-			var time_to=BEGIN_TIME-timestamp;
-			if(time_to<=0){
-				bgain.style.display="block";
-				nobgain.style.display="none";
-				clearInterval(timer);
-			}else{
-				nobgain.style.display="block";
-				bgain.style.display="none";
-			}
-			var hour_to=parseInt(time_to/3600);
-			var min_to=parseInt((time_to-hour_to*3600)/60);
-			var sec_to=parseInt((time_to-hour_to*3600-min_to*60));
-			target.oHour.innerHTML=add_zero(hour_to);
-			target.oMin.innerHTML=add_zero(min_to);
-			target.oSec.innerHTML=add_zero(sec_to);
-		}
-		function add_zero(obj){
-			if(obj<10&&obj>=0){
-				obj='0'+obj;
-			}
-			return obj;
-		}
-	},
+	//在flexible插件下计算屏幕真是高，宽
 	getScrenSize:function(obj){
 		var size;
+		var dpr=window.devicePixelRatio
+		var UA = navigator.userAgent
 		if(obj=="width"){
-			size=document.body.clientHeight;
-		}else{
 			size=document.body.clientWidth;
+		}else{
+			size=document.body.clientHeight;
 		}
 		isIos = /iphone|ipod|ipad/gi.test(UA);// 据说某些国产机的UA会同时包含 android iphone 字符
 		if(isIos){
-			size=size*dpr;
+			size=size/dpr;
 		}
 		return size;
+	},
+	loading:function(loadingarr,targetDom,objloading,objdis){
+		var imgnum=0;
+		//var disarr=["正在整理餐盘…","正在布置会场…","正在烧水…","正在宰杀肉鸡…","通知服务员入场…"]
+        for(var i=0;i<loadingarr.length;i++){
+            var imgObj=document.createElement("img");
+            imgObj.src='images/'+loadingarr[i];
+            imgObj.onload=function(){
+                imgnum++;
+                parcentWidth=parseInt((imgnum/loadingarr.length)*100)+"%";
+                targetDom.html(parcentWidth)
+                //targetDom.html(disarr[imgnum])
+                if(imgnum==loadingarr.length){
+                    objdis.style.display="none";
+                    objloading.style.display="block";
+                }
+            }
+        }
 	}
 }
