@@ -1,5 +1,5 @@
 # wechat-unit
-微信签名，支付，鉴权的封装
+微信签名，支付，鉴权的封装，测试中，还不可以实际应用
 ##引入
 ```html
  <script type="text/javascript" src="js/wechat.js"></script>
