@@ -58,10 +58,12 @@ var $w={
 			$.ajax({
 				type: "GET",
 				url: payurl+"&random="+Math.random(),
-				data:data,
+				data:{data},
 				dataType: jsonTye,
 				success: function(response) {
-					
+					if(response.errorCode){
+						alert(response.message)
+					}else{
 						wx.chooseWXPay({
 							timestamp: response.timeStamp,
 							nonceStr: response.nonceStr,
@@ -78,11 +80,42 @@ var $w={
 								canfn
 							}
 						});
-					
+					}
 					
 				
 				}
 				
 			});
+	},
+	//倒计时
+	timecount:function(BEGIN_TIME,bgain,nobgain,target){
+		timer=setInterval(function(){
+		time_to()
+		},1000);
+		time_to();
+		function time_to(){
+			var timestamp = Date.parse(new Date())/1000;
+			var time_to=BEGIN_TIME-timestamp;
+			if(time_to<=0){
+				bgain.style.display="block";
+				nobgain.style.display="none";
+				clearInterval(timer);
+			}else{
+				nobgain.style.display="block";
+				bgain.style.display="none";
+			}
+			var hour_to=parseInt(time_to/3600);
+			var min_to=parseInt((time_to-hour_to*3600)/60);
+			var sec_to=parseInt((time_to-hour_to*3600-min_to*60));
+			target.oHour.innerHTML=add_zero(hour_to);
+			target.oMin.innerHTML=add_zero(min_to);
+			target.oSec.innerHTML=add_zero(sec_to);
+		}
+		function add_zero(obj){
+			if(obj<10&&obj>=0){
+				obj='0'+obj;
+			}
+			return obj;
+		}
 	}
 }
