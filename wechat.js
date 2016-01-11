@@ -117,5 +117,18 @@ var $w={
 			}
 			return obj;
 		}
+	},
+	getScrenSize:function(obj){
+		var size;
+		if(obj=="width"){
+			size=document.body.clientHeight;
+		}else{
+			size=document.body.clientWidth;
+		}
+		isIos = /iphone|ipod|ipad/gi.test(UA);// 据说某些国产机的UA会同时包含 android iphone 字符
+		if(isIos){
+			size=size*dpr;
+		}
+		return size;
 	}
 }
